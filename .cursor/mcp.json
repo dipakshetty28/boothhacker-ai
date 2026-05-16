@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "serpapi": {
+      "url": "https://mcp.serpapi.com/mcp",
+      "type": "sse",
+      "env": {
+        "SERPAPI_KEY": "24401d25bd186f516367a05e577cdb194ceb22bc611e821479398a44f22ccb7d"
+      }
+    }
+  }
+}
