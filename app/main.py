@@ -155,6 +155,28 @@ if generate_button:
 
     st.markdown("---")
 
+    with st.spinner("Generating Live Booth News Radar..."):
+        live_news = get_live_news(company)
+
+    st.subheader("🚨 Live Booth News Radar")
+
+    if live_news:
+        for news in live_news[:8]:
+            st.markdown(f"### {news.get('title')}")
+
+            st.write(news.get("snippet"))
+
+            if news.get("link"):
+                st.link_button(
+                    "Open Article",
+                    news.get("link")
+                )
+
+            st.caption(f"Source Query: {news.get('query')}")
+            st.markdown("---")
+    else:
+        st.info("No recent news found.")
+
     with st.spinner("Searching company intelligence with SerpApi..."):
         research_queries = [
             f"{company} company official website",
@@ -189,6 +211,15 @@ if generate_button:
                 "title": f"Software Engineering Job: {job.get('title', '')}",
                 "link": job.get("link", ""),
                 "snippet": job.get("snippet", "")
+            }
+        )
+    
+    for news in live_news:
+        all_results.append(
+            {
+                "title": f"News: {news.get('title')}",
+                "link": news.get("link"),
+                "snippet": news.get("snippet")
             }
         )
 
