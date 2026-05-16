@@ -1,62 +1,43 @@
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
-
-load_dotenv()
-
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+from serpapi_client import search_google
 
 
-def generate_booth_intel(company, search_data):
-    context = "\n\n".join(
-        [
-            f"""
-Title: {item.get('title')}
+def get_live_news(company):
+    queries = [
+        f"{company} latest news",
+        f"{company} AI announcement",
+        f"{company} engineering blog",
+        f"{company} GitHub",
+        f"{company} release notes",
+        f"{company} funding",
+        f"{company} layoffs",
+        f"{company} developer tools"
+    ]
 
-Snippet: {item.get('snippet')}
+    all_results = []
 
-Link: {item.get('link')}
-"""
-            for item in search_data
-        ]
-    )
+    for query in queries:
+        try:
+            results = search_google(query, num=3)
 
-    prompt = f"""
-You are an AI conference booth intelligence agent.
+            for item in results:
+                all_results.append({
+                    "query": query,
+                    "title": item.get("title", ""),
+                    "snippet": item.get("snippet", ""),
+                    "link": item.get("link", "")
+                })
 
-Company:
-{company}
+        except Exception as error:
+            print(error)
 
-Research Data:
-{context}
+    deduped = []
+    seen = set()
 
-Generate a detailed report with:
+    for item in all_results:
+        link = item.get("link")
 
-1. What the company does
-2. Recent company news
-3. Interesting recent launches or announcements
-4. Developer pain points
-5. Best technical questions to ask
-6. Networking conversation starters
-7. Hiring/job opportunities
-8. How a software engineer should pitch themselves
-9. Should I apply? Score out of 10
-10. Best conversation opener for this booth
+        if link and link not in seen:
+            seen.add(link)
+            deduped.append(item)
 
-Be practical, detailed, concise, and conference-focused.
-"""
-
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.7
-    )
-
-    return response.choices[0].message.content
+    return deduped[:12]

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from serpapi_client import search_google
 from agent import generate_booth_intel
 from pycon_booth import find_org_booth
+from news_radar import get_live_news
 
 load_dotenv()
 
